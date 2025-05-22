@@ -1,0 +1,90 @@
+/* static/style.css */
+/* Color palette:
+   - Dark Blue: #26648E
+   - Light Blue: #4F8FC0
+   - Teal: #53D2DC
+   - Peach: #FFE3B3
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F0F8FF;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-container {
+    width: 600px;
+    margin: 50px auto;
+    border: 1px solid #4F8FC0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#chat-window {
+    height: 400px;
+    overflow-y: scroll;
+    padding: 10px;
+    background-color: #FBFBFB;
+    border-bottom: 2px solid #4F8FC0;
+}
+
+.message {
+    margin: 10px 0;
+    display: flex;
+}
+
+.message.user .bubble {
+    background-color: #53D2DC;
+    color: #fff;
+    align-self: flex-end;
+}
+
+.message.bot .bubble {
+    background-color: #FFE3B3;
+    color: #333;
+    align-self: flex-start;
+}
+
+.bubble {
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 70%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.input-area {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 10px;
+    background-color: #FBFBFB;
+}
+
+.input-area textarea,
+.input-area input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #4F8FC0;
+    border-radius: 4px;
+}
+
+.input-area button {
+    padding: 8px 12px;
+    background-color: #26648E;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.input-area button:hover {
+    background-color: #4F8FC0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
