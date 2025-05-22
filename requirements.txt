@@ -1,0 +1,9 @@
+Flask
+google-genai
+pytesseract
+Pillow
+sympy
+python-docx
+PyMuPDF
+youtube-transcript-api
+python-dotenv
