@@ -11,4 +11,3 @@ youtube-transcript-api
 reportlab
 pytesseract
 Pillow
-tesseract-ocr
