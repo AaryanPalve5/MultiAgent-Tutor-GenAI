@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Tutor Chat</title>
+  <title>MultiAgent GenAI Tutor</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   <div class="chat-container">
+    <!-- Header with logo, title, description -->
+    <div class="header">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+      <div>
+        <h1>MultiAgent GenAI Tutor</h1>
+        <p class="subtitle">An AI-powered multi-subject tutor with OCR, YouTube summarization, and email PDF export.</p>
+      </div>
+    </div>
+
+    <!-- Chat messages -->
     <div id="chat-window">
       {% for msg in conversation %}
         <div class="message {{ msg.role }}">
@@ -15,28 +25,38 @@
       {% endfor %}
     </div>
 
-    <!-- Row 1: Text chat + Send -->
+    <!-- Row 1: Chat Input -->
     <div class="input-row">
       <form method="post" id="chat-form" action="{{ url_for('index') }}">
         <input type="text" name="question"
-               placeholder="Ask a question or paste YouTube URL..."
-               autocomplete="off" required>
-        <button type="submit">Send</button>
+               placeholder="Ask a question or paste YouTube URL..." required>
+        <button type="submit" class="btn transition-btn">
+          <span class="gradient"></span>
+          <span class="label">Send</span>
+          <span class="transition"></span>
+        </button>
       </form>
     </div>
 
-    <!-- Row 2: OCR Upload + Get Email -->
+    <!-- Row 2: OCR + Get Email -->
     <div class="input-row">
       <form method="post" id="image-form" action="{{ url_for('index') }}" enctype="multipart/form-data">
         <input type="file" name="image" accept="image/*" required>
-        <button type="submit">Upload &amp; OCR</button>
+        <button type="submit" class="btn transition-btn">
+          <span class="gradient"></span>
+          <span class="label">Upload &amp; OCR</span>
+          <span class="transition"></span>
+        </button>
       </form>
 
       <form method="post" id="email-form" action="{{ url_for('send_email') }}">
         <input type="email" name="recipient"
-               placeholder="Your email address..."
-               autocomplete="off" required>
-        <button type="submit">Get Email</button>
+               placeholder="Your email address..." required>
+        <button type="submit" class="btn transition-btn">
+          <span class="gradient"></span>
+          <span class="label">Get Email</span>
+          <span class="transition"></span>
+        </button>
       </form>
     </div>
 
@@ -52,6 +72,7 @@
     {% endwith %}
   </div>
 
+  <!-- Auto-scroll -->
   <script>
     window.onload = () => {
       const chat = document.getElementById('chat-window');
