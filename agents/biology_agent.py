@@ -1,9 +1,8 @@
-# agents/biology_agent.py
-from agents.gemini_api import generate_content
+# File: agents/biology_agent.py
 
-def answer_biology(query: str) -> str:
-    """
-    Handles biology queries using Gemini.
-    """
-    prompt = f"Answer this biology question: {query}"
-    return generate_content(prompt)
+from agents.gemini_api import ask_gemini
+
+class BiologyAgent:
+    def answer(self, question):
+        # Delegate the question to Gemini, specifying "biology" as the subject
+        return ask_gemini("biology", question)

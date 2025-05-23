@@ -1,5 +1,5 @@
 from agents.gemini_api import ask_gemini
 
-class PhysicsAgent:
+class ChemistryAgent:
     def answer(self, question):
-        return ask_gemini("physics", question)
+        return ask_gemini("chemistry", question)

@@ -1,34 +1,27 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Multi-Agent Tutor Bot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Multi-Agent Tutor Bot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-window">
-            <!-- Chat messages will appear here -->
-        </div>
-        <div class="input-area">
-            <!-- Text input form -->
-            <textarea id="text-query" placeholder="Type your question..."></textarea>
-            <button id="send-text">Send</button>
+  <div class="chat-container">
+    <div id="chat-window"></div>
+    <div class="input-area">
+      <textarea id="text-query" placeholder="Type your question..."></textarea>
+      <button id="send-text">Send</button>
 
-            <!-- File upload form -->
-            <input type="file" id="file-input" accept=".pdf,.docx,.txt">
-            <button id="send-file">Summarize Document</button>
+      <input type="file" id="file-input" accept=".pdf,.docx,.txt">
+      <button id="send-file">Upload Doc</button>
 
-            <!-- Image upload form -->
-            <input type="file" id="image-input" accept="image/*">
-            <button id="send-image">Send Image</button>
+      <input type="file" id="image-input" accept="image/*">
+      <button id="send-image">Upload Image</button>
 
-            <!-- YouTube URL form -->
-            <input type="text" id="youtube-url" placeholder="YouTube URL">
-            <button id="send-youtube">Summarize YouTube</button>
-        </div>
+      <input type="text" id="youtube-url" placeholder="YouTube URL">
+      <button id="send-youtube">YouTube Summ.</button>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

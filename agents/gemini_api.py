@@ -1,18 +1,17 @@
-# agents/gemini_api.py
 import os
-from google import genai
-from google.genai import types
+from dotenv import load_dotenv
+from langchain_google_genai import GoogleGenerativeAI
 
-# Initialize the Gemini API client with the API key from .env
-client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
+load_dotenv()  # Load variables from .env
 
-def generate_content(prompt: str, model: str = "gemini-2.0-pro") -> str:
-    """
-    Sends a prompt to the Gemini model and returns the generated text.
-    """
-    # Create content list as expected by the Gemini API
-    response = client.models.generate_content(
-        model=model,
-        contents=[prompt]
+GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
+
+llm = GoogleGenerativeAI(model="models/gemini-1.5-flash", google_api_key=GOOGLE_API_KEY)
+
+def ask_gemini(subject, question):
+    prompt = (
+        f"You are an expert {subject} tutor. Answer the following student question in a clear, concise way:\n\n"
+        f"{question}\n"
+        "Answer:"
     )
-    return response.text
+    return llm(prompt)
