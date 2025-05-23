@@ -12,3 +12,4 @@ reportlab
 pytesseract
 Pillow
 yt_dlp
+whisper
