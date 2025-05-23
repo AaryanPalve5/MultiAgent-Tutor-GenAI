@@ -1,27 +1,26 @@
+<!-- File: templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Multi-Agent Tutor Bot</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>AI Tutor Chat</title>
+    <!-- Link to our custom CSS for chat styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <div class="chat-container">
-    <div id="chat-window"></div>
-    <div class="input-area">
-      <textarea id="text-query" placeholder="Type your question..."></textarea>
-      <button id="send-text">Send</button>
-
-      <input type="file" id="file-input" accept=".pdf,.docx,.txt">
-      <button id="send-file">Upload Doc</button>
-
-      <input type="file" id="image-input" accept="image/*">
-      <button id="send-image">Upload Image</button>
-
-      <input type="text" id="youtube-url" placeholder="YouTube URL">
-      <button id="send-youtube">YouTube Summ.</button>
+    <div class="chat-container">
+        <div id="chat-window">
+            {% for msg in conversation %}
+                <div class="message {{ msg.role }}">
+                    <p>{{ msg.message|safe }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <form method="post" id="chat-form">
+            <input type="text" name="question" id="chat-input"
+                   placeholder="Ask a question or enter a YouTube URL..." required>
+            <button type="submit">Send</button>
+        </form>
     </div>
-  </div>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

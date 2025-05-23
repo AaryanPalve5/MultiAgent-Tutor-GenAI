@@ -1,90 +1,84 @@
-/* static/style.css */
-/* Color palette:
-   - Dark Blue: #26648E
-   - Light Blue: #4F8FC0
-   - Teal: #53D2DC
-   - Peach: #FFE3B3
-*/
+/* File: static/styles.css */
 
+/* Page background and font */
 body {
+    background-color: #f9f9f9;
     font-family: Arial, sans-serif;
-    background-color: #F0F8FF;
-    margin: 0;
-    padding: 0;
 }
 
+/* Container holding the chat */
 .chat-container {
-    width: 600px;
     margin: 50px auto;
-    border: 1px solid #4F8FC0;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#chat-window {
-    height: 400px;
-    overflow-y: scroll;
-    padding: 10px;
-    background-color: #FBFBFB;
-    border-bottom: 2px solid #4F8FC0;
-}
-
-.message {
-    margin: 10px 0;
-    display: flex;
-}
-
-.message.user .bubble {
-    background-color: #53D2DC;
-    color: #fff;
-    align-self: flex-end;
-}
-
-.message.bot .bubble {
-    background-color: #FFE3B3;
-    color: #333;
-    align-self: flex-start;
-}
-
-.bubble {
-    padding: 10px 15px;
+    width: 600px;
+    max-width: 90%;
+    background: #ffffff;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    max-width: 70%;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.input-area {
     display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    gap: 10px;
-    background-color: #FBFBFB;
+    flex-direction: column;
+    height: 80vh;
 }
 
-.input-area textarea,
-.input-area input[type="text"] {
+/* Chat window showing the message history */
+#chat-window {
     flex: 1;
-    padding: 8px;
-    border: 1px solid #4F8FC0;
-    border-radius: 4px;
+    padding: 20px;
+    overflow-y: auto;
 }
 
-.input-area button {
-    padding: 8px 12px;
-    background-color: #26648E;
-    color: #fff;
+/* Common styling for message bubbles */
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+/* User messages (aligned right, light green background) */
+.user {
+    align-self: flex-end;
+    background-color: #dcf8c6;
+}
+
+/* Assistant messages (aligned left, light gray background) */
+.assistant {
+    align-self: flex-start;
+    background-color: #f1f0f0;
+}
+
+/* The form container at the bottom */
+#chat-form {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+
+/* Text input styling */
+#chat-input {
+    flex: 1;
+    padding: 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: 0 0 0 10px;
+    font-size: 1em;
+}
+
+/* Remove outline on focus */
+#chat-input:focus {
+    outline: none;
+}
+
+/* Send button styling */
+#chat-form button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    border-radius: 0 0 10px 0;
+    font-size: 1em;
 }
 
-.input-area button:hover {
-    background-color: #4F8FC0;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Slight color change on hover */
+#chat-form button:hover {
+    background-color: #0056b3;
 }
