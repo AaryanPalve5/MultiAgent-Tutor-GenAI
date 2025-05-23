@@ -1,4 +1,4 @@
-from tools.calculator import CalculatorTool
+from tools.calculator_tool import CalculatorTool
 from agents.gemini_api import ask_gemini
 
 class MathAgent:
