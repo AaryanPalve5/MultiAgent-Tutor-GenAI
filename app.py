@@ -1,78 +1,47 @@
-# app.py
+# File: app.py
 
-import os
-from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, session
+from agents.mentor_agent import MentorAgent
+import re, os
+from dotenv import load_dotenv
 
-from agents.tutor_agent import classify_and_respond
-from tools.document_summarizer import summarize_document
-from tools.ocr_tool import ocr_image
-from tools.youtube_summarizer import summarize_youtube_video
-
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'pdf', 'docx', 'txt', 'png', 'jpg', 'jpeg'}
-
+load_dotenv()
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.secret_key = os.urandom(24)  # Needed for session
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+mentor_agent = MentorAgent()
 
-@app.route('/')
+def simple_format_markdown(text):
+    """Lightweight markdown formatting for **bold**, *italic*, and `code`."""
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
+    text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
+    text = text.replace('\n', '<br>')
+    return text
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    # Initialize conversation history in session if not present
+    if 'conversation' not in session:
+        session['conversation'] = []
+    
+    if request.method == 'POST':
+        user_input = request.form.get('question')
+        # Append user's message to conversation
+        conversation = session['conversation']
+        conversation.append({'role': 'user', 'message': simple_format_markdown(user_input)})
 
-@app.route('/ask_text', methods=['POST'])
-def ask_text():
-    data = request.get_json() or {}
-    query = data.get('query', '').strip()
-    if not query:
-        return jsonify(answer="Please enter a question."), 400
+        # Get response from mentor agent (subject or summarizer)
+        answer, subject = mentor_agent.handle_question(user_input)
+        # Format answer (it may contain markdown-like symbols)
+        answer_html = simple_format_markdown(answer)
+        conversation.append({'role': 'assistant', 'message': answer_html})
 
-    # This will now always return a string, even on errors
-    answer = classify_and_respond(query)
-    return jsonify(answer=answer)
+        # Save back to session
+        session['conversation'] = conversation
 
-@app.route('/upload_file', methods=['POST'])
-def upload_file():
-    file = request.files.get('file')
-    if not file or file.filename == '' or not allowed_file(file.filename):
-        return jsonify(answer="Invalid or missing document."), 400
+    # Render the chat interface with the conversation history
+    return render_template('index.html', conversation=session.get('conversation', []))
 
-    filename = secure_filename(file.filename)
-    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(path)
-
-    summary = summarize_document(path)
-    return jsonify(answer=summary)
-
-@app.route('/upload_image', methods=['POST'])
-def upload_image():
-    img = request.files.get('image')
-    if not img or img.filename == '' or not allowed_file(img.filename):
-        return jsonify(answer="Invalid or missing image."), 400
-
-    filename = secure_filename(img.filename)
-    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    img.save(path)
-
-    text = ocr_image(path).strip()
-    if not text:
-        return jsonify(answer="Could not read text from the image.")
-
-    answer = classify_and_respond(text)
-    return jsonify(answer=answer)
-
-@app.route('/youtube', methods=['POST'])
-def youtube():
-    data = request.get_json() or {}
-    url = data.get('url', '').strip()
-    if not url:
-        return jsonify(answer="No YouTube URL provided."), 400
-
-    summary = summarize_youtube_video(url)
-    return jsonify(answer=summary)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
