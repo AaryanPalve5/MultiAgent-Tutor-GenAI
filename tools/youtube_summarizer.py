@@ -1,7 +1,7 @@
-# File: tools/youtube_summarizer.py
-
 import os
 import re
+import tempfile
+import shutil
 from dotenv import load_dotenv
 from youtube_transcript_api import (
     YouTubeTranscriptApi,
@@ -11,10 +11,11 @@ from youtube_transcript_api import (
 )
 from langchain_google_genai import GoogleGenerativeAI
 
-# Load environment variables
-load_dotenv()
+# Whisper and yt-dlp are used for audio fallback
+import whisper
+import yt_dlp
 
-# Initialize Gemini LLM
+load_dotenv()
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GEMINI_API_KEY not set in environment variables.")
@@ -25,57 +26,97 @@ llm = GoogleGenerativeAI(
 )
 
 class YouTubeSummarizerTool:
-    def summarize(self, url: str) -> str:
-        """
-        Summarize a YouTube video by fetching its transcript and asking Gemini to
-        produce concise bullet points (<=250 words).
-        """
-        # Extract video ID
-        match = re.search(
-            r"(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})", url
-        )
-        if not match:
-            return "Invalid YouTube URL."
-        video_id = match.group(1)
+    def _init_(self):
+        self.whisper_model = whisper.load_model("base")  # Use 'small' or 'medium' for better accuracy
 
-        # Fetch transcript with robust error handling
+    def extract_video_id(self, url):
+        match = re.search(r"(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{11})", url)
+        return match.group(1) if match else None
+
+    def fetch_transcript(self, video_id):
         try:
-            transcript_list = YouTubeTranscriptApi.get_transcript(
-                video_id, languages=["en"]
-            )
-        except TranscriptsDisabled:
-            return "Transcripts are disabled for this video."
-        except VideoUnavailable:
-            return "The video is unavailable or does not exist."
-        except NoTranscriptFound:
-            return "No transcript found for this video."
-        except Exception as e:
-            # Handle HTTP 429 Too Many Requests separately
-            error_msg = str(e)
-            if '429' in error_msg or 'Too Many Requests' in error_msg:
-                return "YouTube transcript API rate limit exceeded. Please try again later."
-            # Fallback: list and fetch manually
+            return YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
+        except (TranscriptsDisabled, VideoUnavailable, NoTranscriptFound):
+            return None
+        except Exception:
+            # Fallback: try listing and fetching transcripts
             try:
                 transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
                 transcript = transcripts.find_transcript(["en", "en-US"])
-                transcript_list = transcript.fetch()
-            except Exception as e2:
-                return f"Could not retrieve transcript for this video: {e2}"
+                return transcript.fetch()
+            except Exception:
+                return None
 
-        # Combine transcript text
-        full_text = " ".join(seg.get("text", "") for seg in transcript_list)
+    def download_audio(self, url):
+        temp_dir = tempfile.mkdtemp()
+        audio_path = os.path.join(temp_dir, "audio.mp3")
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': audio_path,
+            'quiet': True,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+            return audio_path, temp_dir
+        except Exception as e:
+            shutil.rmtree(temp_dir)
+            return None, None
 
-        # Build prompt
+    def transcribe_audio(self, audio_path):
+        try:
+            result = self.whisper_model.transcribe(audio_path, language='en')
+            return result.get('text', '')
+        except Exception:
+            return ""
+
+    def summarize(self, url: str) -> str:
+        video_id = self.extract_video_id(url)
+        if not video_id:
+            return "Invalid YouTube URL."
+
+        transcript_list = self.fetch_transcript(video_id)
+        if transcript_list:
+            full_text = " ".join(seg.get("text", "") for seg in transcript_list)
+        else:
+            # If no transcript, try Whisper fallback
+            audio_path, temp_dir = self.download_audio(url)
+            if audio_path:
+                full_text = self.transcribe_audio(audio_path)
+                shutil.rmtree(temp_dir)  # Clean up temp files
+                if not full_text.strip():
+                    return "Could not transcribe audio. Video may be too long, unavailable, or in a non-English language."
+            else:
+                return "Could not retrieve transcript or audio for this video. It may be private, restricted, or too large."
+
+        if not full_text or not full_text.strip():
+            return "Transcript/audio extraction failed."
+
+        # Optional: Limit input size for LLM
+        MAX_CHARS = 18000
+        if len(full_text) > MAX_CHARS:
+            full_text = full_text[:MAX_CHARS] + "\n...[truncated]"
+
         prompt = (
             "Summarize the following text from a YouTube video transcript into concise bullet points. "
             "Ensure the total summary does not exceed 250 words:\n\n"
             f"{full_text}"
         )
 
-        # Call Gemini LLM
         try:
             summary = llm.invoke(prompt)
+            # If using LangChain v0.1+, summary is a str. If not, might be Generation obj.
+            if hasattr(summary, 'content'):
+                return summary.content
+            return str(summary)
         except Exception as e:
             return f"Error generating summary: {e}"
 
-        return summary
+# Example usage:
+# yts = YouTubeSummarizerTool()
+# print(yts.summarize("https://www.youtube.com/watch?v=HvK35jjMb5I"))
