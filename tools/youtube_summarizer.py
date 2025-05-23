@@ -49,14 +49,18 @@ class YouTubeSummarizerTool:
             return "The video is unavailable or does not exist."
         except NoTranscriptFound:
             return "No transcript found for this video."
-        except Exception:
+        except Exception as e:
+            # Handle HTTP 429 Too Many Requests separately
+            error_msg = str(e)
+            if '429' in error_msg or 'Too Many Requests' in error_msg:
+                return "YouTube transcript API rate limit exceeded. Please try again later."
             # Fallback: list and fetch manually
             try:
                 transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
                 transcript = transcripts.find_transcript(["en", "en-US"])
                 transcript_list = transcript.fetch()
-            except Exception as e:
-                return f"Could not retrieve transcript for this video: {e}"
+            except Exception as e2:
+                return f"Could not retrieve transcript for this video: {e2}"
 
         # Combine transcript text
         full_text = " ".join(seg.get("text", "") for seg in transcript_list)
