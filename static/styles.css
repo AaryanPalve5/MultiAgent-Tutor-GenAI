@@ -1,142 +1,118 @@
-/* File: D:\Tutor-AI\static\styles.css */
-
 /* Reset & Base */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background-color: #f0f2f5;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  font-family: 'Segoe UI', sans-serif;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   height: 100vh;
 }
 
 /* Chat Container */
 .chat-container {
-  width: 600px;
-  max-width: 95%;
-  height: 80vh;
-  background: #fff;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
+  width: 600px; max-width: 95%; height: 80vh;
+  background: #fff; border-radius: 12px;
+  display: flex; flex-direction: column;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 /* Messages Area */
 #chat-window {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background: #fafafa;
+  flex: 1; padding: 20px; overflow-y: auto; background: #fafafa;
 }
-#chat-window::-webkit-scrollbar {
-  width: 6px;
-}
+#chat-window::-webkit-scrollbar { width: 6px; }
 #chat-window::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 3px;
+  background: rgba(0,0,0,0.2); border-radius: 3px;
 }
 
-/* Individual Message */
+/* Message Bubbles */
 .message {
-  margin: 8px 0;
-  padding: 12px 16px;
-  border-radius: 18px;
-  max-width: 70%;
-  line-height: 1.4;
-  word-wrap: break-word;
-  animation: fadeIn 0.2s ease-in-out;
+  margin: 8px 0; padding: 12px 16px;
+  border-radius: 18px; max-width: 70%; line-height: 1.4;
+  word-wrap: break-word; animation: fadeIn 0.2s ease-in-out;
 }
 .user {
-  background: #dcf8c6;
-  align-self: flex-end;
+  background: #dcf8c6; align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 .assistant {
-  background: #fff;
-  border: 1px solid #ececec;
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
+  background: #fff; border: 1px solid #ececec;
+  align-self: flex-start; border-bottom-left-radius: 4px;
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Input Row */
+/* Input Rows */
 .input-row {
   display: flex;
+  gap: 8px;
+  padding: 10px;
   border-top: 1px solid #ddd;
   background: #fff;
 }
+
 .input-row form {
   display: flex;
   flex: 1;
+  align-items: center;
 }
-#chat-form {
-  margin-right: 8px;
-}
+
+/* Shared input styling */
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+input[type="file"] {
   flex: 1;
-  padding: 12px 16px;
-  border: none;
-  background: #f7f7f7;
-  transition: background 0.2s;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 1rem;
 }
-input:focus {
-  background: #eaeaea;
-  outline: none;
+
+/* File input smaller font */
+input[type="file"] {
+  font-size: 0.9rem;
+  padding: 6px 10px;
 }
+
+/* Button styling */
 button {
-  padding: 0 20px;
+  margin-left: 8px;
+  padding: 8px 16px;
   background: #0066ff;
   color: #fff;
   border: none;
-  font-weight: 600;
+  border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
 }
-button:hover {
-  background: #004fcc;
-}
-input::placeholder {
-  color: #888;
-}
+button:hover { background: #004fcc; }
 
 /* Flash Messages */
 .flashes {
-  list-style: none;
-  padding: 12px 20px;
-  background: rgba(0,0,0,0.05);
-  border-top: 1px solid #ddd;
+  list-style: none; padding: 12px 20px;
+  background: rgba(0,0,0,0.05); border-top: 1px solid #ddd;
 }
 .flashes li {
-  margin: 6px 0;
-  padding: 10px 14px;
-  border-radius: 6px;
+  margin: 6px 0; padding: 10px 14px; border-radius: 6px;
   font-size: 0.95rem;
 }
 .flashes .success {
-  background: #e6ffed;
-  border: 1px solid #6cc070;
-  color: #2f6627;
+  background: #e6ffed; border: 1px solid #6cc070; color: #2f6627;
 }
 .flashes .error {
-  background: #ffe6e6;
-  border: 1px solid #e06c6c;
-  color: #662727;
+  background: #ffe6e6; border: 1px solid #e06c6c; color: #662727;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
   .chat-container { height: 90vh; }
-  input[type="text"], input[type="email"] { font-size: 0.9rem; }
+  input[type="text"],
+  input[type="email"],
+  input[type="file"] {
+    font-size: 0.9rem;
+  }
 }

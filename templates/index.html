@@ -15,16 +15,23 @@
       {% endfor %}
     </div>
 
+    <!-- Row 1: Text chat + Send -->
     <div class="input-row">
-      <!-- Chat Input -->
       <form method="post" id="chat-form" action="{{ url_for('index') }}">
         <input type="text" name="question"
                placeholder="Ask a question or paste YouTube URL..."
                autocomplete="off" required>
         <button type="submit">Send</button>
       </form>
+    </div>
 
-      <!-- Email PDF Input -->
+    <!-- Row 2: OCR Upload + Get Email -->
+    <div class="input-row">
+      <form method="post" id="image-form" action="{{ url_for('index') }}" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload &amp; OCR</button>
+      </form>
+
       <form method="post" id="email-form" action="{{ url_for('send_email') }}">
         <input type="email" name="recipient"
                placeholder="Your email address..."
@@ -45,7 +52,6 @@
     {% endwith %}
   </div>
 
-  <!-- Auto-scroll to bottom on load -->
   <script>
     window.onload = () => {
       const chat = document.getElementById('chat-window');

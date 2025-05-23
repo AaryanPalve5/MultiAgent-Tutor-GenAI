@@ -8,20 +8,20 @@ from flask import (
 )
 from dotenv import load_dotenv
 
-# Load environment (including email creds)
 load_dotenv()
 
 from agents.mentor_agent import MentorAgent
 from tools.email_tool import EmailTool
+from tools.ocr_tool import OCRTool
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 mentor_agent = MentorAgent()
 email_tool   = EmailTool()
+ocr_tool     = OCRTool()
 
 def simple_format_markdown(text):
-    """Convert **bold**, *italic*, `code`, and newlines to HTML."""
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
     text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
@@ -32,22 +32,30 @@ def index():
     conv = session.get('conversation', [])
 
     if request.method == 'POST':
-        # User message
+        # 1) Handle image upload for OCR
+        img = request.files.get('image')
+        if img and img.filename:
+            extracted = ocr_tool.extract_text(img).strip()
+            # Show the extracted text as user message
+            conv.append({'role': 'user',
+                         'message': simple_format_markdown(f"Extracted text from image:\n{extracted}")})
+            # Classify subject + answer
+            answer, _ = mentor_agent.handle_question(extracted)
+            conv.append({'role': 'assistant',
+                         'message': simple_format_markdown(answer)})
+            session['conversation'] = conv
+            return redirect(url_for('index'))
+
+        # 2) Otherwise, normal chat/question or YouTube URL
         user_input = request.form.get('question')
-        conv.append({
-            'role': 'user',
-            'message': simple_format_markdown(user_input)
-        })
-
-        # AI response
-        answer, _ = mentor_agent.handle_question(user_input)
-        conv.append({
-            'role': 'assistant',
-            'message': simple_format_markdown(answer)
-        })
-
-        session['conversation'] = conv
-        return redirect(url_for('index'))
+        if user_input:
+            conv.append({'role': 'user',
+                         'message': simple_format_markdown(user_input)})
+            answer, _ = mentor_agent.handle_question(user_input)
+            conv.append({'role': 'assistant',
+                         'message': simple_format_markdown(answer)})
+            session['conversation'] = conv
+            return redirect(url_for('index'))
 
     return render_template('index.html', conversation=conv)
 
@@ -63,7 +71,7 @@ def send_email():
         flash("No conversation to send.", "error")
         return redirect(url_for('index'))
 
-    # Build a single HTML string of the entire chat
+    # Build full HTML
     html_parts = []
     for msg in conv:
         prefix = "You: " if msg['role']=='user' else "Tutor: "
