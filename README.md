@@ -1,7 +1,7 @@
 # MultiAgent GenAI Tutor
 
 ### Live Demo - Deployed Link
-[![Live Demo Link](https://img.shields.io/badge/demo-video-grey)](https://multiagent-tutor-genai-1.onrender.com/)  
+[![Live Demo Link](https://img.shields.io/badge/demo-Live-grey)](https://multiagent-tutor-genai-1.onrender.com/)  
 
 ### Video Demonstration of MultiAgent GenAI Tutor
 [![Demo Video Link](https://img.shields.io/badge/demo-video-grey)](https://www.youtube.com/watch?v=rvKiMwnTaLM)  
