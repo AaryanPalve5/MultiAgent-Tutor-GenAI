@@ -4,7 +4,7 @@
 [![Live Demo Link](https://img.shields.io/badge/demo-Live-grey)](https://multiagent-tutor-genai-1.onrender.com/)  
 
 ### Video Demonstration of MultiAgent GenAI Tutor
-[![Demo Video Link](https://img.shields.io/badge/demo-video-grey)](https://www.youtube.com/watch?v=rvKiMwnTaLM)  
+[![Demo Video Link](https://img.shields.io/badge/demo-Video-grey)](https://www.youtube.com/watch?v=rvKiMwnTaLM)  
 
 
 
@@ -135,8 +135,7 @@ Visit [http://localhost:5000](http://localhost:5000) in your browser.
 ## Deployment
 
 Deployed on Render.
-**Live App:** [https://your-app-on-render.example.com](https://your-app-on-render.example.com)
-(Replace with your actual URL once available.)
+**Live App:** [https://multiagent-tutor-genai-1.onrender.com/](https://multiagent-tutor-genai-1.onrender.com/)
 
 ---
 
