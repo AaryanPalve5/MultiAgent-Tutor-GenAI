@@ -13,16 +13,16 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 
 llm = GoogleGenerativeAI(
-    model="models/gemini-1.5-flash",
+    model="models/gemini-2.5-flash",
     google_api_key=GOOGLE_API_KEY
 )
 
 prompt = PromptTemplate(
     input_variables=["question"],
     template=(
-        "Classify the following question into one subject from this list: "
+        "Classify the following question into one subject or the most relatable to  from this list: "
         "math, physics, chemistry, biology. "
-        "Return exactly one of: 'math', 'physics', 'chemistry', 'biology', or 'unknown'. "
+        "Return exactly one of: 'math', 'physics', 'chemistry', 'biology', or 'unknown'. If the answer is 'unknown' try finding the closest subject and retry"
         "Do not explain or elaborate, just reply with the subject keyword.\n\n"
         "Question: {question}\nSubject:"
     ),
